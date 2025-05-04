@@ -6,6 +6,7 @@ import axios from "axios";
 import { Download, HomeIcon, ImageIcon, Loader } from "lucide-react";
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
+import Image from "next/image";
 
 interface InferenceResult {
   inference_id: string;
@@ -59,7 +60,7 @@ export default function Page() {
 
       axios({
         method: "POST",
-        url: "https://detect.roboflow.com/f_cancer-g1dow/2",
+        url: "https://serverless.roboflow.com/horus-perceive/2",
         params: {
           api_key: "VAlnq3JGLDoJAYHhL0vF"
         },
@@ -83,7 +84,9 @@ export default function Page() {
   };
 
   // Function to handle download
+  
   const htmlToImageConvert = () => {
+    // @ts-ignore
     toPng(elementRef.current, { cacheBust: false })
       .then((dataUrl) => {
         const link = document.createElement("a");
@@ -151,7 +154,7 @@ export default function Page() {
             {file ? (
               <div className=" w-full h-[60vh] rounded-2xl flex items-center justify-center">
                 <div ref={elementRef} className=" relative ">
-                  <img src={`${imageUrl}`} alt="" className=" w-auto h-auto" />
+                  <Image src={`${imageUrl}`} alt="" className=" " width={500} height={500} />
                   {result?.predictions.map((prediction) => {
                     const { x, y, width, height } = prediction;
                     const scaledWidth = (width / result.image.width) * 100; // Scale width to percentage
@@ -162,8 +165,8 @@ export default function Page() {
                         key={prediction.detection_id}
                         style={{
                           position: "absolute",
-                          top: `${(y / result.image.height - 0.04) * 100}% `,
-                          left: `${(x / result.image.width - 0.04) * 100}% `,
+                          top: `${(y / result.image.height - 0.1) * 100}% `,
+                          left: `${(x / result.image.width - 0.1) * 100}% `,
                           width: `${scaledWidth}%`,
                           height: `${scaledHeight}%`
                         }}
@@ -189,9 +192,9 @@ export default function Page() {
                               left: 0,
                               padding: "2px 5px"
                             }}
-                            className=" text-xs font-medium  text-blue-500"
+                            className=" text-sm font-semibold  text-red-500"
                           >
-                            {prediction.class} (
+                            tumor (
                             {prediction.confidence.toFixed(2)})
                           </div>
                         </div>
@@ -243,7 +246,7 @@ export default function Page() {
           </div>
         }
 
-        <div className=" w-[25%] px-5 py-10 flex flex-col items-center divide-x-2 divide-red-950 rounded-2xl shadow-xl">
+        <div className=" w-[25%] px-5 py-10 h-fit flex flex-col items-center divide-x-2 divide-red-950 rounded-2xl shadow-xl">
           <div className=" w-[90%]">
             <div className=" mt-10">
               <h1 className=" font-semibold text-2xl">Detection Summary</h1>
